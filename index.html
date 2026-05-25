@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Шпаргалка к ГИА: быстрый поиск по вопросам и ответам ИТ-технологий цифрового контента.">
+  <title>ГОСBOOST — поиск по ответам ГИА</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <nav class="topbar" aria-label="Основная навигация">
+      <a class="brand" href="#top" aria-label="ГОСBOOST, перейти наверх">
+        <span class="brand__mark">G</span>
+        <span class="brand__text">ГОСBOOST</span>
+      </a>
+      <a class="topbar__link" href="#questions">Все вопросы</a>
+    </nav>
+
+    <section class="hero__content" id="top">
+      <p class="eyebrow">Государственная итоговая аттестация · бакалавр</p>
+      <h1>Адаптивная шпаргалка с быстрым поиском по вопросам и ответам</h1>
+      <p class="hero__lead">Вводишь слово, фразу или номер вопроса — ресурс находит совпадения по заголовку и тексту ответа, показывает контекст и прокручивает к нужному билету.</p>
+
+      <form class="search" role="search" aria-label="Поиск по вопросам">
+        <label class="search__label" for="searchInput">Поиск по контексту</label>
+        <div class="search__box">
+          <input id="searchInput" name="q" type="search" autocomplete="off" placeholder="Например: Grid, авторское право, 39, сценарий...">
+          <button class="button" type="submit">Найти</button>
+        </div>
+        <p class="search__hint">Поддерживается поиск по номеру, заголовку, ключевым словам и полному тексту ответа.</p>
+      </form>
+    </section>
+  </header>
+
+  <main>
+    <section class="stats" aria-label="Статистика базы">
+      <article class="stat"><strong id="readyCount">0</strong><span>ответов загружено</span></article>
+      <article class="stat"><strong id="totalCount">85</strong><span>вопросов всего</span></article>
+      <article class="stat"><strong id="missingCount">0</strong><span>ожидают файл</span></article>
+    </section>
+
+    <section class="layout" id="questions">
+      <aside class="sidebar" aria-label="Фильтры">
+        <div class="panel">
+          <h2>Разделы</h2>
+          <div class="chips" id="categoryFilters"></div>
+        </div>
+        <div class="panel">
+          <h2>Подсказка</h2>
+          <p>Нажми на результат или карточку. Ссылка сохранится в адресе, поэтому можно быстро вернуться к конкретному вопросу.</p>
+        </div>
+      </aside>
+
+      <section class="content" aria-live="polite">
+        <div class="resultsbar">
+          <div>
+            <p class="eyebrow">Результаты</p>
+            <h2 id="resultTitle">Все вопросы</h2>
+          </div>
+          <button class="ghost-button" id="clearSearch" type="button">Сбросить</button>
+        </div>
+
+        <div class="results" id="results"></div>
+        <div class="answers" id="answers"></div>
+      </section>
+    </section>
+  </main>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Наверх">↑</button>
+</body>
+</html>
