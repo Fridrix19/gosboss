@@ -1,17 +1,17 @@
 :root {
-  --bg: #0b1020;
-  --bg-soft: #101832;
-  --card: rgba(255, 255, 255, 0.9);
-  --card-strong: #ffffff;
-  --text: #162033;
-  --muted: #607089;
-  --line: rgba(22, 32, 51, 0.12);
-  --primary: #6c5ce7;
-  --primary-dark: #4b3ec9;
-  --accent: #00d4ff;
-  --success: #18a058;
-  --warning: #d97706;
-  --shadow: 0 24px 70px rgba(8, 13, 31, 0.18);
+  --bg: #070b16;
+  --bg-soft: #0d1426;
+  --card: rgba(17, 25, 45, 0.86);
+  --card-strong: #111a2f;
+  --text: #e8eefc;
+  --muted: #9aa8c7;
+  --line: rgba(148, 163, 184, 0.18);
+  --primary: #8b7cf6;
+  --primary-dark: #b7adff;
+  --accent: #20d3ff;
+  --success: #55d98d;
+  --warning: #fbbf24;
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
   --radius: 24px;
   --radius-sm: 14px;
   --container: min(1180px, calc(100vw - 32px));
@@ -30,9 +30,9 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 15% 0%, rgba(108, 92, 231, 0.28), transparent 34rem),
-    radial-gradient(circle at 85% 10%, rgba(0, 212, 255, 0.2), transparent 30rem),
-    #eef2ff;
+    radial-gradient(circle at 12% 0%, rgba(139, 124, 246, 0.26), transparent 34rem),
+    radial-gradient(circle at 88% 8%, rgba(32, 211, 255, 0.18), transparent 30rem),
+    linear-gradient(180deg, #070b16 0%, #0a1020 46%, #0b1224 100%);
   line-height: 1.65;
 }
 
@@ -41,9 +41,9 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.34) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.34) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
   background-size: 42px 42px;
-  mask-image: linear-gradient(to bottom, black, transparent 70%);
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
 }
 
 button,
@@ -59,8 +59,8 @@ a {
   min-height: 560px;
   color: #fff;
   background:
-    linear-gradient(135deg, rgba(11, 16, 32, 0.92), rgba(40, 35, 108, 0.9)),
-    radial-gradient(circle at 80% 30%, rgba(0, 212, 255, 0.35), transparent 24rem),
+    linear-gradient(135deg, rgba(7, 11, 22, 0.96), rgba(22, 18, 58, 0.92)),
+    radial-gradient(circle at 80% 30%, rgba(32, 211, 255, 0.22), transparent 24rem),
     var(--bg);
   border-bottom-left-radius: 42px;
   border-bottom-right-radius: 42px;
@@ -168,8 +168,9 @@ h1 {
   max-width: 860px;
   padding: 18px;
   border-radius: 26px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(16px);
 }
 
@@ -188,12 +189,16 @@ h1 {
   min-width: 0;
   flex: 1;
   height: 58px;
-  border: 0;
+  border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 18px;
   padding: 0 18px;
   outline: none;
-  color: #111827;
-  background: #fff;
+  color: var(--text);
+  background: rgba(2, 6, 23, 0.84);
+}
+
+.search input::placeholder {
+  color: #7786a8;
 }
 
 .search input:focus {
@@ -244,8 +249,9 @@ h1 {
 .stat {
   min-height: 112px;
   padding: 22px;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--card-strong);
+  background: linear-gradient(180deg, rgba(20, 30, 53, 0.96), rgba(13, 20, 38, 0.96));
   box-shadow: var(--shadow);
 }
 
@@ -281,8 +287,8 @@ h1 {
 .answer-card {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.08);
+  background: var(--card);
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(12px);
 }
 
@@ -308,9 +314,10 @@ h1 {
 
 .chip {
   padding: 9px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 999px;
   color: var(--text);
-  background: rgba(108, 92, 231, 0.1);
+  background: rgba(139, 124, 246, 0.14);
   font-weight: 750;
 }
 
@@ -334,9 +341,10 @@ h1 {
 
 .ghost-button {
   padding: 12px 16px;
+  border: 1px solid rgba(139, 124, 246, 0.2);
   border-radius: 14px;
   color: var(--primary-dark);
-  background: rgba(108, 92, 231, 0.12);
+  background: rgba(139, 124, 246, 0.14);
   font-weight: 800;
 }
 
@@ -402,7 +410,7 @@ h1 {
 
 .answer-card__header {
   padding: 24px;
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.09), rgba(0, 212, 255, 0.08));
+  background: linear-gradient(135deg, rgba(139, 124, 246, 0.13), rgba(32, 211, 255, 0.08));
   border-bottom: 1px solid var(--line);
 }
 
@@ -433,7 +441,7 @@ h1 {
   padding: 18px 20px;
   border-left: 5px solid var(--primary);
   border-radius: 0 18px 18px 0;
-  background: rgba(108, 92, 231, 0.08);
+  background: rgba(139, 124, 246, 0.12);
   font-size: 1.06rem;
 }
 
@@ -450,8 +458,9 @@ h1 {
 .answer-card__body ol {
   margin: 14px 0 22px;
   padding: 16px 18px 16px 42px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 18px;
-  background: rgba(96, 112, 137, 0.08);
+  background: rgba(2, 6, 23, 0.28);
 }
 
 .answer-card__body li {
@@ -460,7 +469,7 @@ h1 {
 }
 
 .answer-card__body strong {
-  color: #0f172a;
+  color: #ffffff;
   font-weight: 850;
 }
 
@@ -476,9 +485,10 @@ h1 {
   align-items: center;
   gap: 6px;
   padding: 7px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 999px;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(2, 6, 23, 0.34);
   font-size: 0.84rem;
   font-weight: 800;
 }
@@ -504,10 +514,10 @@ mark {
 
 .empty {
   padding: 28px;
-  border: 1px dashed rgba(108, 92, 231, 0.35);
+  border: 1px dashed rgba(139, 124, 246, 0.36);
   border-radius: var(--radius);
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(17, 25, 45, 0.68);
 }
 
 .to-top {
