@@ -10,9 +10,9 @@ from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCX_FILES = [
-    "Ответы Гос 1-19.docx",
-    "ГОСЫ 20-38.docx",
-    "Ответы 39 - 57.docx",
+    "Ответы Гос 1-19 Эдиториал Дизайн Контент.docx",
+    "ГОСЫ 20-38 (2).docx",
+    "20-57_исправлено (1).docx",
 ]
 
 QUESTION_TITLES = {
@@ -176,7 +176,9 @@ def split_answers(text: str) -> dict[int, str]:
     matches = [
         m
         for m in pattern.finditer(text)
-        if 1 <= int(m.group(1)) <= 85 and title_matches_question(int(m.group(1)), m.group(2))
+        if 1 <= int(m.group(1)) <= 85
+        and "\t" not in m.group(2)
+        and title_matches_question(int(m.group(1)), m.group(2))
     ]
     answers: dict[int, str] = {}
     for idx, match in enumerate(matches):
