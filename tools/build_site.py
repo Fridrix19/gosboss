@@ -434,19 +434,7 @@ INDEX_HTML = """<!doctype html>
 </head>
 <body>
   <header class=\"hero\">
-    <nav class=\"topbar\" aria-label=\"Основная навигация\">
-      <a class=\"brand\" href=\"#top\" aria-label=\"ГОСBOOST, перейти наверх\">
-        <span class=\"brand__mark\">G</span>
-        <span class=\"brand__text\">ГОСBOOST</span>
-      </a>
-      <a class=\"topbar__link\" href=\"#questions\">Все вопросы</a>
-    </nav>
-
     <section class=\"hero__content\" id=\"top\">
-      <p class=\"eyebrow\">Государственная итоговая аттестация · бакалавр</p>
-      <h1>Адаптивная шпаргалка с быстрым поиском по вопросам и ответам</h1>
-      <p class=\"hero__lead\">Вводишь слово, фразу или номер вопроса — ресурс находит совпадения по заголовку и тексту ответа, показывает контекст и прокручивает к нужному билету.</p>
-
       <form class=\"search\" role=\"search\" aria-label=\"Поиск по вопросам\">
         <label class=\"search__label\" for=\"searchInput\">Поиск по контексту</label>
         <div class=\"search__box\">
@@ -555,7 +543,7 @@ a {
 }
 
 .hero {
-  min-height: 560px;
+  min-height: 260px;
   color: #fff;
   background:
     linear-gradient(135deg, rgba(7, 11, 22, 0.96), rgba(22, 18, 58, 0.92)),
@@ -588,12 +576,7 @@ a {
 }
 
 .topbar {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px 0;
+  display: none;
 }
 
 .brand {
@@ -627,7 +610,7 @@ a {
   position: relative;
   z-index: 2;
   max-width: 920px;
-  margin-top: 54px;
+  padding-top: 54px;
 }
 
 .eyebrow {
@@ -1049,8 +1032,8 @@ mark {
   }
 
   .hero__content {
-    margin-top: 32px;
-    padding-bottom: 88px;
+    padding-top: 32px;
+    padding-bottom: 54px;
   }
 
   .stats {
