@@ -436,12 +436,12 @@ INDEX_HTML = """<!doctype html>
   <header class=\"hero\">
     <section class=\"hero__content\" id=\"top\">
       <form class=\"search\" role=\"search\" aria-label=\"Поиск по вопросам\">
-        <label class=\"search__label\" for=\"searchInput\">Поиск по контексту</label>
+        <label class=\"search__label\" for=\"searchInput\">Поиск по вопросам</label>
         <div class=\"search__box\">
           <input id=\"searchInput\" name=\"q\" type=\"search\" autocomplete=\"off\" placeholder=\"Например: Grid, авторское право, 39, сценарий...\">
           <button class=\"button\" type=\"submit\">Найти</button>
         </div>
-        <p class=\"search__hint\">Поддерживается поиск по номеру, заголовку, ключевым словам и полному тексту ответа.</p>
+        <p class=\"search__hint\">Поиск работает по номеру, заголовку, ключевым словам и полному тексту ответа.</p>
       </form>
     </section>
   </header>
@@ -543,14 +543,14 @@ a {
 }
 
 .hero {
-  min-height: 260px;
+  min-height: 220px;
   color: #fff;
   background:
     linear-gradient(135deg, rgba(7, 11, 22, 0.96), rgba(22, 18, 58, 0.92)),
     radial-gradient(circle at 80% 30%, rgba(32, 211, 255, 0.22), transparent 24rem),
     var(--bg);
-  border-bottom-left-radius: 42px;
-  border-bottom-right-radius: 42px;
+  border-bottom-left-radius: 34px;
+  border-bottom-right-radius: 34px;
   overflow: hidden;
   position: relative;
 }
@@ -567,7 +567,6 @@ a {
   filter: blur(2px);
 }
 
-.topbar,
 .hero__content,
 .stats,
 .layout {
@@ -575,42 +574,11 @@ a {
   margin-inline: auto;
 }
 
-.topbar {
-  display: none;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.brand__mark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--primary));
-  box-shadow: 0 10px 28px rgba(0, 212, 255, 0.25);
-}
-
-.topbar__link {
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.82);
-  padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-}
-
 .hero__content {
   position: relative;
   z-index: 2;
   max-width: 920px;
-  padding-top: 54px;
+  padding: 42px 0 64px;
 }
 
 .eyebrow {
@@ -647,7 +615,7 @@ h1 {
 }
 
 .search {
-  max-width: 860px;
+  max-width: 920px;
   padding: 18px;
   border-radius: 26px;
   background: rgba(15, 23, 42, 0.72);
@@ -723,7 +691,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-top: -48px;
+  margin-top: 22px;
   position: relative;
   z-index: 3;
 }
@@ -1032,8 +1000,7 @@ mark {
   }
 
   .hero__content {
-    padding-top: 32px;
-    padding-bottom: 54px;
+    padding: 28px 0 44px;
   }
 
   .stats {
@@ -1051,14 +1018,6 @@ mark {
 }
 
 @media (max-width: 620px) {
-  .topbar {
-    padding: 16px 0;
-  }
-
-  .brand__text {
-    display: none;
-  }
-
   .search__box,
   .resultsbar,
   .answer-card__top {
