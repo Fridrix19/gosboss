@@ -7,7 +7,6 @@ const state = {
 const els = {
   input: document.querySelector("#searchInput"),
   form: document.querySelector(".search"),
-  results: document.querySelector("#results"),
   answers: document.querySelector("#answers"),
   resultTitle: document.querySelector("#resultTitle"),
   clearSearch: document.querySelector("#clearSearch"),
@@ -109,26 +108,6 @@ function renderCategories() {
   }).join("");
 }
 
-function renderResults(questions) {
-  if (!questions.length) {
-    els.results.innerHTML = `<div class="empty">Ничего не найдено. Попробуй другое слово, номер вопроса или часть формулировки.</div>`;
-    return;
-  }
-
-  els.results.innerHTML = questions.slice(0, 10).map((question) => {
-    const context = getContext(question, state.query);
-    return `
-      <a class="result-card" href="#q-${question.id}" data-id="${question.id}">
-        <span class="badge">${question.id}</span>
-        <span>
-          <h3>${highlight(question.title, state.query)}</h3>
-          <p>${highlight(context, state.query)}</p>
-        </span>
-        <span class="result-card__meta">${question.status === "ready" ? "готов" : "нет ответа"}</span>
-      </a>`;
-  }).join("");
-}
-
 function renderAnswers(questions) {
   els.answers.innerHTML = questions.map((question) => {
     const statusClass = question.status === "ready" ? "status-ready" : "status-missing";
@@ -188,7 +167,6 @@ function render() {
     ? `Найдено: ${questions.length}`
     : state.category === "all" ? "Все вопросы" : state.category;
   renderCategories();
-  renderResults(questions);
   renderAnswers(questions);
   syncUrl();
 }
@@ -247,17 +225,6 @@ els.categoryFilters.addEventListener("click", (event) => {
   if (!button) return;
   state.category = button.dataset.category;
   render();
-});
-
-els.results.addEventListener("click", (event) => {
-  const link = event.target.closest("[data-id]");
-  if (!link) return;
-  const id = link.dataset.id;
-  requestAnimationFrame(() => {
-    const card = document.querySelector(`#q-${id}`);
-    card?.classList.add("is-highlighted");
-    setTimeout(() => card?.classList.remove("is-highlighted"), 1800);
-  });
 });
 
 window.addEventListener("scroll", () => {

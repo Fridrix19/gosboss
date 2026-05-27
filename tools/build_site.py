@@ -14,6 +14,7 @@ DOCX_FILES = [
     "ГОСЫ 20-38 (2).docx",
     "20-57_исправлено (1).docx",
 ]
+SOURCE_FOR_20_38 = "ГОСЫ 20-38 (2).docx"
 
 QUESTION_TITLES = {
     1: "Актуальные тенденции эдиториал-дизайна.",
@@ -387,6 +388,8 @@ def build_questions() -> list[dict[str, object]]:
         text = read_docx_text(path)
         raw_texts[name] = text
         for number, answer in split_answers(text).items():
+            if 20 <= number <= 38 and name != SOURCE_FOR_20_38:
+                continue
             answer_map[number] = answer
             sources[number] = name
 
@@ -474,7 +477,6 @@ INDEX_HTML = """<!doctype html>
           <button class=\"ghost-button\" id=\"clearSearch\" type=\"button\">Сбросить</button>
         </div>
 
-        <div class=\"results\" id=\"results\"></div>
         <div class=\"answers\" id=\"answers\"></div>
       </section>
     </section>
@@ -488,17 +490,17 @@ INDEX_HTML = """<!doctype html>
 STYLES_CSS = """:root {
   --bg: #070b16;
   --bg-soft: #0d1426;
-  --card: rgba(17, 25, 45, 0.86);
-  --card-strong: #111a2f;
+  --card: #111a2f;
+  --card-strong: #121d34;
   --text: #e8eefc;
   --muted: #9aa8c7;
-  --line: rgba(148, 163, 184, 0.18);
+  --line: rgba(148, 163, 184, 0.2);
   --primary: #8b7cf6;
   --primary-dark: #b7adff;
   --accent: #20d3ff;
   --success: #55d98d;
   --warning: #fbbf24;
-  --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
   --radius: 24px;
   --radius-sm: 14px;
   --container: min(1180px, calc(100vw - 32px));
@@ -516,21 +518,8 @@ body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at 12% 0%, rgba(139, 124, 246, 0.26), transparent 34rem),
-    radial-gradient(circle at 88% 8%, rgba(32, 211, 255, 0.18), transparent 30rem),
-    linear-gradient(180deg, #070b16 0%, #0a1020 46%, #0b1224 100%);
+  background: #070b16;
   line-height: 1.65;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: linear-gradient(to bottom, black, transparent 72%);
 }
 
 button,
@@ -545,26 +534,11 @@ a {
 .hero {
   min-height: 220px;
   color: #fff;
-  background:
-    linear-gradient(135deg, rgba(7, 11, 22, 0.96), rgba(22, 18, 58, 0.92)),
-    radial-gradient(circle at 80% 30%, rgba(32, 211, 255, 0.22), transparent 24rem),
-    var(--bg);
+  background: var(--bg-soft);
   border-bottom-left-radius: 34px;
   border-bottom-right-radius: 34px;
   overflow: hidden;
   position: relative;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  width: 460px;
-  height: 460px;
-  right: -120px;
-  bottom: -180px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.34), rgba(108, 92, 231, 0.16));
-  filter: blur(2px);
 }
 
 .hero__content,
@@ -618,10 +592,8 @@ h1 {
   max-width: 920px;
   padding: 18px;
   border-radius: 26px;
-  background: rgba(15, 23, 42, 0.72);
+  background: var(--card);
   border: 1px solid rgba(148, 163, 184, 0.22);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(16px);
 }
 
 .search__label {
@@ -652,7 +624,7 @@ h1 {
 }
 
 .search input:focus {
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.24);
+  border-color: var(--accent);
 }
 
 .button,
@@ -661,7 +633,6 @@ h1 {
 .to-top {
   border: 0;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .button {
@@ -670,15 +641,13 @@ h1 {
   border-radius: 18px;
   color: #fff;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  box-shadow: 0 16px 36px rgba(0, 212, 255, 0.24);
+  background: var(--primary);
 }
 
 .button:hover,
 .ghost-button:hover,
-.chip:hover,
-.to-top:hover {
-  transform: translateY(-1px);
+.chip:hover {
+  background: #7767e8;
 }
 
 .search__hint {
@@ -701,7 +670,7 @@ h1 {
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(20, 30, 53, 0.96), rgba(13, 20, 38, 0.96));
+  background: var(--card);
   box-shadow: var(--shadow);
 }
 
@@ -733,13 +702,11 @@ h1 {
 
 .panel,
 .resultsbar,
-.result-card,
 .answer-card {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
-  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
 }
 
 .panel {
@@ -798,21 +765,6 @@ h1 {
   font-weight: 800;
 }
 
-.results {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.result-card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 14px;
-  align-items: start;
-  padding: 16px;
-  text-decoration: none;
-}
-
 .badge {
   display: inline-flex;
   align-items: center;
@@ -824,24 +776,6 @@ h1 {
   color: #fff;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   font-weight: 900;
-}
-
-.result-card h3 {
-  margin-bottom: 6px;
-  font-size: 1.05rem;
-}
-
-.result-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.96rem;
-}
-
-.result-card__meta {
-  white-space: nowrap;
-  color: var(--muted);
-  font-size: 0.84rem;
-  font-weight: 800;
 }
 
 .answers {
@@ -860,7 +794,7 @@ h1 {
 
 .answer-card__header {
   padding: 24px;
-  background: linear-gradient(135deg, rgba(139, 124, 246, 0.13), rgba(32, 211, 255, 0.08));
+  background: var(--card-strong);
   border-bottom: 1px solid var(--line);
 }
 
@@ -972,8 +906,9 @@ mark {
 
 .to-top {
   position: fixed;
+  top: 50%;
   right: 18px;
-  bottom: 18px;
+  bottom: auto;
   z-index: 10;
   display: none;
   width: 48px;
@@ -982,6 +917,7 @@ mark {
   color: #fff;
   background: var(--primary);
   box-shadow: var(--shadow);
+  transform: translateY(-50%);
 }
 
 .to-top.is-visible {
@@ -1050,14 +986,6 @@ mark {
     font-size: 17px;
   }
 
-  .result-card {
-    grid-template-columns: auto 1fr;
-  }
-
-  .result-card__meta {
-    grid-column: 1 / -1;
-  }
-
   .answer-card__header,
   .answer-card__body {
     padding-inline: 18px;
@@ -1074,7 +1002,6 @@ APP_JS = r"""const state = {
 const els = {
   input: document.querySelector("#searchInput"),
   form: document.querySelector(".search"),
-  results: document.querySelector("#results"),
   answers: document.querySelector("#answers"),
   resultTitle: document.querySelector("#resultTitle"),
   clearSearch: document.querySelector("#clearSearch"),
@@ -1176,26 +1103,6 @@ function renderCategories() {
   }).join("");
 }
 
-function renderResults(questions) {
-  if (!questions.length) {
-    els.results.innerHTML = `<div class="empty">Ничего не найдено. Попробуй другое слово, номер вопроса или часть формулировки.</div>`;
-    return;
-  }
-
-  els.results.innerHTML = questions.slice(0, 10).map((question) => {
-    const context = getContext(question, state.query);
-    return `
-      <a class="result-card" href="#q-${question.id}" data-id="${question.id}">
-        <span class="badge">${question.id}</span>
-        <span>
-          <h3>${highlight(question.title, state.query)}</h3>
-          <p>${highlight(context, state.query)}</p>
-        </span>
-        <span class="result-card__meta">${question.status === "ready" ? "готов" : "нет ответа"}</span>
-      </a>`;
-  }).join("");
-}
-
 function renderAnswers(questions) {
   els.answers.innerHTML = questions.map((question) => {
     const statusClass = question.status === "ready" ? "status-ready" : "status-missing";
@@ -1255,7 +1162,6 @@ function render() {
     ? `Найдено: ${questions.length}`
     : state.category === "all" ? "Все вопросы" : state.category;
   renderCategories();
-  renderResults(questions);
   renderAnswers(questions);
   syncUrl();
 }
@@ -1314,17 +1220,6 @@ els.categoryFilters.addEventListener("click", (event) => {
   if (!button) return;
   state.category = button.dataset.category;
   render();
-});
-
-els.results.addEventListener("click", (event) => {
-  const link = event.target.closest("[data-id]");
-  if (!link) return;
-  const id = link.dataset.id;
-  requestAnimationFrame(() => {
-    const card = document.querySelector(`#q-${id}`);
-    card?.classList.add("is-highlighted");
-    setTimeout(() => card?.classList.remove("is-highlighted"), 1800);
-  });
 });
 
 window.addEventListener("scroll", () => {
