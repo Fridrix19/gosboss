@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import html
 import json
+import posixpath
 import re
+import shutil
 import unicodedata
 import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
+ASSETS_DIR = ROOT / "assets" / "docx"
 DOCX_FILES = [
     "Гос 1-19.docx",
     "ГОСЫ 20-38 (2).docx",
@@ -120,23 +123,95 @@ CATEGORY_RULES = [
 ]
 
 
+def safe_asset_slug(value: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9_-]+", "-", value.lower()).strip("-")
+    return slug or "docx"
+
+
+def rel_target_path(target: str) -> str:
+    return posixpath.normpath(posixpath.join("word", target))
+
+
+def local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
+
+
+def relationship_map(zf: zipfile.ZipFile) -> dict[str, str]:
+    rels_path = "word/_rels/document.xml.rels"
+    if rels_path not in zf.namelist():
+        return {}
+    root = ET.fromstring(zf.read(rels_path))
+    return {item.attrib["Id"]: item.attrib.get("Target", "") for item in root}
+
+
+def image_from_drawing(
+    zf: zipfile.ZipFile,
+    drawing: ET.Element,
+    rels: dict[str, str],
+    asset_dir: Path,
+) -> tuple[str, str] | None:
+    blip = next((node for node in drawing.iter() if local_name(node.tag) == "blip"), None)
+    if blip is None:
+        return None
+
+    rel_id = next((value for key, value in blip.attrib.items() if key.endswith("}embed") or key.endswith("}link")), "")
+    target = rels.get(rel_id)
+    if not target:
+        return None
+
+    media_path = rel_target_path(target)
+    if media_path not in zf.namelist():
+        return None
+
+    source_name = Path(media_path).name
+    output_path = asset_dir / source_name
+    output_path.write_bytes(zf.read(media_path))
+
+    meta = next((node for node in drawing.iter() if local_name(node.tag) == "cNvPr"), None)
+    alt = ""
+    if meta is not None:
+        alt = meta.attrib.get("descr") or meta.attrib.get("name") or ""
+    if not alt:
+        alt = source_name
+
+    return output_path.relative_to(ROOT).as_posix(), alt
+
+
 def read_docx_text(path: Path) -> str:
     ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+    asset_dir = ASSETS_DIR / safe_asset_slug(path.stem)
+    asset_dir.mkdir(parents=True, exist_ok=True)
+
     with zipfile.ZipFile(path) as zf:
         xml_text = zf.read("word/document.xml")
-    root = ET.fromstring(xml_text)
-    paragraphs: list[str] = []
-    for paragraph in root.findall(".//w:p", ns):
-        parts: list[str] = []
-        for node in paragraph.iter():
-            if node.tag == f"{{{ns['w']}}}t" and node.text:
-                parts.append(node.text)
-            elif node.tag == f"{{{ns['w']}}}tab":
-                parts.append("\t")
-            elif node.tag == f"{{{ns['w']}}}br":
-                parts.append("\n")
-        line = "".join(parts).strip()
-        paragraphs.append(line)
+        rels = relationship_map(zf)
+        root = ET.fromstring(xml_text)
+        paragraphs: list[str] = []
+
+        for paragraph in root.findall(".//w:p", ns):
+            parts: list[str] = []
+            for node in paragraph.iter():
+                if node.tag == f"{{{ns['w']}}}t" and node.text:
+                    parts.append(node.text)
+                elif node.tag == f"{{{ns['w']}}}tab":
+                    parts.append("\t")
+                elif node.tag == f"{{{ns['w']}}}br":
+                    parts.append("\n")
+
+            line = "".join(parts).strip()
+            images = [
+                image
+                for drawing in paragraph.iter()
+                if local_name(drawing.tag) == "drawing"
+                for image in [image_from_drawing(zf, drawing, rels, asset_dir)]
+                if image is not None
+            ]
+
+            if line:
+                paragraphs.append(line)
+            for src, alt in images:
+                paragraphs.append(f"[[IMAGE:{src}|{alt}]]")
+
     text = "\n".join(paragraphs)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
@@ -330,6 +405,19 @@ def paragraphs_to_html(text: str) -> str:
     while i < len(lines):
         line = lines[i]
 
+        image_match = re.match(r"^\[\[IMAGE:(.+?)\|(.*?)\]\]$", line)
+        if image_match:
+            if flush_paragraph(paragraph, result, lead=paragraph_count == 0):
+                paragraph_count += 1
+            src, alt = image_match.groups()
+            result.append(
+                "<figure class=\"answer-image\">"
+                f"<img src=\"{html.escape(src, quote=True)}\" alt=\"{html.escape(alt, quote=True)}\" loading=\"lazy\">"
+                "</figure>"
+            )
+            i += 1
+            continue
+
         numbered_match = re.match(r"^(\d+)[.)]\s+(.+)$", line)
         if numbered_match:
             if flush_paragraph(paragraph, result, lead=paragraph_count == 0):
@@ -384,6 +472,9 @@ def build_questions() -> list[dict[str, object]]:
     answer_map: dict[int, str] = {}
     sources: dict[int, str] = {}
     raw_texts: dict[str, str] = {}
+    if ASSETS_DIR.exists():
+        shutil.rmtree(ASSETS_DIR)
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
     for name in DOCX_FILES:
         path = ROOT / name
         text = read_docx_text(path)
@@ -818,6 +909,19 @@ h1 {
   color: var(--primary-dark);
   font-size: 1.05rem;
   letter-spacing: 0.02em;
+}
+
+.answer-image {
+  margin: 22px 0;
+}
+
+.answer-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
 }
 
 .answer-card__body ul,

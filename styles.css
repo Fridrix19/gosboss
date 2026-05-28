@@ -337,6 +337,19 @@ h1 {
   letter-spacing: 0.02em;
 }
 
+.answer-image {
+  margin: 22px 0;
+}
+
+.answer-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+
 .answer-card__body ul,
 .answer-card__body ol {
   margin: 14px 0 22px;
