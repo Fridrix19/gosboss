@@ -13,12 +13,8 @@ from xml.etree import ElementTree as ET
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS_DIR = ROOT / "assets" / "docx"
 DOCX_FILES = [
-    "Гос 1-19.docx",
-    "ГОСЫ 20-38 (2).docx",
-    "39-57 исправлено (3).docx",
-    "ИСИТ.docx",
+    "Все билеты.docx",
 ]
-SOURCE_FOR_20_38 = "ГОСЫ 20-38 (2).docx"
 
 QUESTION_TITLES = {
     1: "Актуальные тенденции эдиториал-дизайна.",
@@ -480,8 +476,6 @@ def build_questions() -> list[dict[str, object]]:
         text = read_docx_text(path)
         raw_texts[name] = text
         for number, answer in split_answers(text).items():
-            if 20 <= number <= 38 and name != SOURCE_FOR_20_38:
-                continue
             answer_map[number] = answer
             sources[number] = name
 
