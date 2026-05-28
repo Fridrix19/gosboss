@@ -11,9 +11,6 @@ const els = {
   answers: document.querySelector("#answers"),
   resultTitle: document.querySelector("#resultTitle"),
   clearSearch: document.querySelector("#clearSearch"),
-  readyCount: document.querySelector("#readyCount"),
-  totalCount: document.querySelector("#totalCount"),
-  missingCount: document.querySelector("#missingCount"),
   categoryFilters: document.querySelector("#categoryFilters"),
   toTop: document.querySelector("#toTop"),
 };
@@ -96,13 +93,6 @@ function filteredQuestions() {
     .sort((a, b) => b.score - a.score || a.question.id - b.question.id);
 
   return withScore.map((item) => item.question);
-}
-
-function renderStats() {
-  const ready = state.questions.filter((question) => question.status === "ready").length;
-  els.readyCount.textContent = ready;
-  els.totalCount.textContent = state.questions.length;
-  els.missingCount.textContent = state.questions.length - ready;
 }
 
 function renderCategories() {
@@ -212,7 +202,6 @@ async function init() {
   state.category = params.get("category") || "all";
   els.input.value = state.query;
 
-  renderStats();
   render();
 
   if (location.hash) {

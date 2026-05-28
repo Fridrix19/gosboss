@@ -53,7 +53,6 @@ a {
 }
 
 .hero__content,
-.stats,
 .layout {
   width: var(--container);
   margin-inline: auto;
@@ -165,35 +164,6 @@ h1 {
   margin: 12px 4px 0;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 22px;
-  position: relative;
-  z-index: 3;
-}
-
-.stat {
-  min-height: 112px;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--card);
-  box-shadow: var(--shadow);
-}
-
-.stat strong {
-  display: block;
-  font-size: 2.2rem;
-  line-height: 1;
-}
-
-.stat span {
-  color: var(--muted);
-  font-weight: 700;
 }
 
 .layout {
@@ -466,11 +436,6 @@ mark {
 
   .hero__content {
     padding: 28px 0 44px;
-  }
-
-  .stats {
-    grid-template-columns: 1fr;
-    margin-top: 18px;
   }
 
   .layout {

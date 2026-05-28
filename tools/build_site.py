@@ -450,12 +450,6 @@ INDEX_HTML = """<!doctype html>
   </header>
 
   <main>
-    <section class=\"stats\" aria-label=\"Статистика базы\">
-      <article class=\"stat\"><strong id=\"readyCount\">0</strong><span>ответов загружено</span></article>
-      <article class=\"stat\"><strong id=\"totalCount\">85</strong><span>вопросов всего</span></article>
-      <article class=\"stat\"><strong id=\"missingCount\">0</strong><span>ожидают файл</span></article>
-    </section>
-
     <section class=\"layout\" id=\"questions\">
       <aside class=\"sidebar\" aria-label=\"Фильтры\">
         <div class=\"panel\">
@@ -542,7 +536,6 @@ a {
 }
 
 .hero__content,
-.stats,
 .layout {
   width: var(--container);
   margin-inline: auto;
@@ -654,35 +647,6 @@ h1 {
   margin: 12px 4px 0;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 22px;
-  position: relative;
-  z-index: 3;
-}
-
-.stat {
-  min-height: 112px;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--card);
-  box-shadow: var(--shadow);
-}
-
-.stat strong {
-  display: block;
-  font-size: 2.2rem;
-  line-height: 1;
-}
-
-.stat span {
-  color: var(--muted);
-  font-weight: 700;
 }
 
 .layout {
@@ -957,11 +921,6 @@ mark {
     padding: 28px 0 44px;
   }
 
-  .stats {
-    grid-template-columns: 1fr;
-    margin-top: 18px;
-  }
-
   .layout {
     grid-template-columns: 1fr;
   }
@@ -1024,9 +983,6 @@ const els = {
   answers: document.querySelector("#answers"),
   resultTitle: document.querySelector("#resultTitle"),
   clearSearch: document.querySelector("#clearSearch"),
-  readyCount: document.querySelector("#readyCount"),
-  totalCount: document.querySelector("#totalCount"),
-  missingCount: document.querySelector("#missingCount"),
   categoryFilters: document.querySelector("#categoryFilters"),
   toTop: document.querySelector("#toTop"),
 };
@@ -1109,13 +1065,6 @@ function filteredQuestions() {
     .sort((a, b) => b.score - a.score || a.question.id - b.question.id);
 
   return withScore.map((item) => item.question);
-}
-
-function renderStats() {
-  const ready = state.questions.filter((question) => question.status === "ready").length;
-  els.readyCount.textContent = ready;
-  els.totalCount.textContent = state.questions.length;
-  els.missingCount.textContent = state.questions.length - ready;
 }
 
 function renderCategories() {
@@ -1225,7 +1174,6 @@ async function init() {
   state.category = params.get("category") || "all";
   els.input.value = state.query;
 
-  renderStats();
   render();
 
   if (location.hash) {
