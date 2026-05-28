@@ -2,6 +2,7 @@ const state = {
   questions: [],
   query: "",
   category: "all",
+  openId: 1,
 };
 
 const els = {
@@ -30,18 +31,23 @@ const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (char) => 
   '"': "\\u0026quot;",
 }[char]));
 
-const stripHtml = (value) => {
-  const node = document.createElement("div");
-  node.innerHTML = value || "";
-  return node.textContent || node.innerText || "";
-};
+const stripHtml = (value) => String(value || "")
+  .replace(/<[^>]+>/g, " ")
+  .replace(/&[^;]+;/g, " ")
+  .replace(/\s+/g, " ")
+  .trim();
+
+const prepareQuestion = (question) => ({
+  ...question,
+  searchText: normalize(stripHtml(question.answerHtml)),
+});
 
 function scoreQuestion(question, query) {
   if (!query) return 1;
   const normalizedQuery = normalize(query).trim();
   const tokens = normalizedQuery.split(/\s+/).filter(Boolean);
   const title = normalize(question.title);
-  const answer = normalize(question.answer);
+  const answer = question.searchText;
   const id = String(question.id);
   const combined = `${id} ${title} ${answer} ${normalize((question.keywords || []).join(" "))}`;
   let score = 0;
@@ -109,25 +115,34 @@ function renderCategories() {
 }
 
 function renderAnswers(questions) {
+  if (!questions.length) {
+    els.answers.innerHTML = `<div class="empty">Ничего не найдено. Попробуй другое слово, номер вопроса или часть формулировки.</div>`;
+    return;
+  }
+
   els.answers.innerHTML = questions.map((question) => {
+    const isOpen = question.id === state.openId;
     const statusClass = question.status === "ready" ? "status-ready" : "status-missing";
     const statusLabel = question.status === "ready" ? "ответ загружен" : "ожидается ответ";
-    const body = question.status === "ready" ? question.answerHtml : `<p class="muted">Ответ пока не добавлен. Заголовок уже есть в базе, поэтому поиск по формулировке будет работать. Когда пришлёшь файл с ответами 58–85, базу можно обновить.</p>`;
+    const body = question.status === "ready" ? question.answerHtml : `<p class="muted">Ответ пока не добавлен.</p>`;
+    const renderedBody = isOpen ? (state.query ? highlightAnswerHtml(body, state.query) : body) : "";
     return `
-      <article class="answer-card" id="q-${question.id}" data-id="${question.id}">
+      <article class="answer-card${isOpen ? " is-open" : ""}" id="q-${question.id}" data-id="${question.id}">
         <header class="answer-card__header">
-          <div class="answer-card__top">
-            <span class="badge">${question.id}</span>
-            <a class="ghost-button" href="#q-${question.id}" aria-label="Ссылка на вопрос ${question.id}">#${question.id}</a>
-          </div>
-          <h3>${highlight(question.title, state.query)}</h3>
-          <div class="meta-list">
-            <span class="meta-pill ${statusClass}">${statusLabel}</span>
-            <span class="meta-pill">${escapeHtml(question.category)}</span>
-            <span class="meta-pill">Источник: ${escapeHtml(question.source)}</span>
-          </div>
+          <button class="answer-toggle" type="button" data-toggle="${question.id}" aria-expanded="${isOpen}">
+            <div class="answer-card__top">
+              <span class="badge">${question.id}</span>
+              <span class="toggle-state">${isOpen ? "Свернуть" : "Открыть"}</span>
+            </div>
+            <h3>${highlight(question.title, state.query)}</h3>
+            <div class="meta-list">
+              <span class="meta-pill ${statusClass}">${statusLabel}</span>
+              <span class="meta-pill">${escapeHtml(question.category)}</span>
+              <span class="meta-pill">Источник: ${escapeHtml(question.source)}</span>
+            </div>
+          </button>
         </header>
-        <div class="answer-card__body">${state.query ? highlightAnswerHtml(body, state.query) : body}</div>
+        <div class="answer-card__body"${isOpen ? "" : " hidden"}>${renderedBody}</div>
       </article>`;
   }).join("");
 }
@@ -163,6 +178,9 @@ function syncUrl() {
 
 function render() {
   const questions = filteredQuestions();
+  if (!questions.some((question) => question.id === state.openId)) {
+    state.openId = questions[0]?.id || 0;
+  }
   els.resultTitle.textContent = state.query
     ? `Найдено: ${questions.length}`
     : state.category === "all" ? "Все вопросы" : state.category;
@@ -174,6 +192,8 @@ function render() {
 function jumpToFirstResult() {
   const first = filteredQuestions()[0];
   if (!first) return;
+  state.openId = first.id;
+  render();
   requestAnimationFrame(() => {
     const card = document.querySelector(`#q-${first.id}`);
     if (!card) return;
@@ -185,7 +205,7 @@ function jumpToFirstResult() {
 
 async function init() {
   const response = await fetch("data/questions.json");
-  state.questions = await response.json();
+  state.questions = (await response.json()).map(prepareQuestion);
 
   const params = new URLSearchParams(location.search);
   state.query = params.get("q") || "";
@@ -203,7 +223,6 @@ async function init() {
 els.form.addEventListener("submit", (event) => {
   event.preventDefault();
   state.query = els.input.value.trim();
-  render();
   jumpToFirstResult();
 });
 
@@ -225,6 +244,14 @@ els.categoryFilters.addEventListener("click", (event) => {
   if (!button) return;
   state.category = button.dataset.category;
   render();
+});
+
+els.answers.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-toggle]");
+  if (!button) return;
+  state.openId = Number(button.dataset.toggle);
+  render();
+  requestAnimationFrame(() => document.querySelector(`#q-${state.openId}`)?.scrollIntoView({ block: "start" }));
 });
 
 window.addEventListener("scroll", () => {

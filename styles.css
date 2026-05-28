@@ -304,9 +304,23 @@ h1 {
 }
 
 .answer-card__header {
-  padding: 24px;
   background: var(--card-strong);
   border-bottom: 1px solid var(--line);
+}
+
+.answer-toggle {
+  display: block;
+  width: 100%;
+  padding: 24px;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+}
+
+.toggle-state {
+  color: var(--primary-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .answer-card__top {
@@ -325,6 +339,10 @@ h1 {
 .answer-card__body {
   padding: 8px 24px 28px;
   max-width: 82ch;
+}
+
+.answer-card__body[hidden] {
+  display: none;
 }
 
 .answer-card__body p {
@@ -497,7 +515,7 @@ mark {
     font-size: 17px;
   }
 
-  .answer-card__header,
+  .answer-toggle,
   .answer-card__body {
     padding-inline: 18px;
   }
